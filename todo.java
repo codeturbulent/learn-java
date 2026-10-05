@@ -1,8 +1,21 @@
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Scanner;
-
 public class todo {
     public static void welcome() {
-        table(new String[][] {{"Welcome TO Your TODO List"}});
+        table(new String[][] { { "Welcome TO Your TODO List" } });
+    }
+
+    public static void showoptions() {
+        table(new String[][] {
+                { "Action", "Choice" },
+                { "Create New Table", "New (N)" },
+                { "View all tasks", "Show (S)" },
+                { "Mark Complete by ID", "Mark (M)" },
+                { "Delete a Task by ID", "Del (D)" },
+
+        });
     }
 
     public static int lcol(String[][] data, int index) {
@@ -53,10 +66,18 @@ public class todo {
                     System.out.printf("─");
                 }
                 if (j == c - 1) {
-                    System.out.println("┐");
+                    if (i == 0) {
+                        System.out.println("┐");
+                    } else {
+                        System.out.println("┤");
+                    }
                 } else {
-                    System.out.printf("┬");
 
+                    if (i == 0) {
+                        System.out.printf("┬");
+                    } else {
+                        System.out.printf("┼");
+                    }
                 }
 
             }
@@ -69,36 +90,63 @@ public class todo {
 
             }
             System.out.println();
-
-        }
-
-    }
-
-    public static void main(String[] args) {
-        Scanner scan = new Scanner(System.in);
-        welcome();
-        table(new String[][] {
-                { "Action", "Choice" },
-                { "Create New Table", "New (N)" },
-                { "View all tasks", "Show (S)" },
-                { "Mark Complete by ID", "Mark (M)" },
-                { "Delete a Task by ID", "Del (D)" },
-
-        });
-        while (true) {
-
-            System.out.println("Enter your input ('Q/q' to quit):");
-            String uIn = scan.nextLine();
-
-            if (uIn.equals("Q") || uIn.equals("q")) {
-                System.out.println("Saving the Data and Exiting");
-                break;
-            } else if (uIn.equals("N")) {
-
+            if (i == r - 1) {
+                System.out.printf("└");
+                for (int j = 0; j < c; j++) {
+                    int coll = lcol(data, j) + 4;
+                    for (int k = 0; k < coll; k++) {
+                        System.out.printf("─");
+                    }
+                    if (j == c - 1) {
+                        if (i == r - 1) {
+                            System.out.println("┘");
+                        } else {
+                            System.out.println("┐");
+                        }
+                    } else {
+                        System.out.printf("┴");
+                    }
+                }
             }
         }
+    }
 
+    public static int createtask(Path fp,String task) throws IOException {
+        //reading to know number of ids present
+        String content = Files.readString(fp);
+        String[] data = content.split("\n");
+        return 0;
+    }
+
+    public static void main(String[] args) throws IOException {
+        Path fp =  Path.of("tasks.txt");
+
+        Scanner scan = new Scanner(System.in);
+        welcome();
+        showoptions();
+
+        while (true) {
+
+            System.out.print("Enter your input ('Q/q' to quit):");
+            String uIn = scan.nextLine();
+
+            if (uIn.equals("Q") || uIn.equals("q") || uIn.equals("Quit") || uIn.equals("quit")) {
+                System.out.println("Saving the Data and Exiting");
+                break;
+            } else if (uIn.equals("N") || uIn.equals("n") || uIn.equals("New") || uIn.equals("new")) {
+                System.out.print("What is Your New Task :");
+                String taskinp = scan.nextLine();
+                System.out.println(taskinp);
+                int taskid = createtask(fp,taskinp);
+                System.out.printf("Task Created with id %d \n" , taskid);
+            }else if (uIn.equals("S") || uIn.equals("s") || uIn.equals("Show") || uIn.equals("show")) {
+                
+            }else{
+                 System.out.println("Choose a Valid Option.");
+            }
+        }
         scan.close();
+
     }
 
 }
