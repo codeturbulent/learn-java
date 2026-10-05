@@ -113,9 +113,18 @@ public class todo {
 
     public static int createtask(Path fp,String task) throws IOException {
         //reading to know number of ids present
+return 0;
+    }
+    public static void showtasks(Path fp) throws IOException {
         String content = Files.readString(fp);
-        String[] data = content.split("\n");
-        return 0;
+        String[] data = content.split("\\r?\\n");
+        String[][] table = new String[data.length][];
+        for (int i = 0; i < data.length; i++) {
+            String[] items = data[i].split("\\|\\|");
+            table[i] = items;
+        }
+        table(table);
+   
     }
 
     public static void main(String[] args) throws IOException {
@@ -140,7 +149,7 @@ public class todo {
                 int taskid = createtask(fp,taskinp);
                 System.out.printf("Task Created with id %d \n" , taskid);
             }else if (uIn.equals("S") || uIn.equals("s") || uIn.equals("Show") || uIn.equals("show")) {
-                
+                showtasks(fp);
             }else{
                  System.out.println("Choose a Valid Option.");
             }
