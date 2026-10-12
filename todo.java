@@ -1,7 +1,10 @@
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.Scanner;
+
 public class todo {
     public static void welcome() {
         table(new String[][] { { "Welcome TO Your TODO List" } });
@@ -111,24 +114,52 @@ public class todo {
         }
     }
 
-    public static int createtask(Path fp,String task) throws IOException {
-        //reading to know number of ids present
-return 0;
-    }
-    public static void showtasks(Path fp) throws IOException {
-        String content = Files.readString(fp);
-        String[] data = content.split("\\r?\\n");
-        String[][] table = new String[data.length][];
-        for (int i = 0; i < data.length; i++) {
-            String[] items = data[i].split("\\|\\|");
-            table[i] = items;
+    public static void createtask(Path fp, String task) throws IOException {
+        // reading to know number of ids present
+        int index = 1;
+        try {
+           String content = Files.readString(fp);
+            String[] data = content.split("\\r?\\n");
+            String[][] table = new String[data.length][];
+            for (int i = 0; i < data.length; i++) {
+                String[] items = data[i].split("\\|\\|");
+                table[i] = items;
+            }
+            index= Integer.parseInt( table[-1][0])+1;
+            System.err.println(index);
+        } catch (Exception e) {
+            Files.writeString(fp, "TaskID||Finished||Task\n",StandardOpenOption.CREATE);
+          
         }
-        table(table);
-   
+        try {
+
+            String taskline = "%d||Pending||%s\n".formatted(index,task);
+        Files.writeString(fp, taskline,   StandardOpenOption.APPEND);
+            table(new String[][] {{"Created Task ID" , "%d".formatted(index)}});
+        } catch (Exception e) {
+            table(new String[][] {{"Failed To add the task", e.toString()}});
+        }
+        
+    }
+
+    public static void showtasks(Path fp) throws IOException {
+        try {
+            String content = Files.readString(fp);
+            String[] data = content.split("\\r?\\n");
+            String[][] table = new String[data.length][];
+            for (int i = 0; i < data.length; i++) {
+                String[] items = data[i].split("\\|\\|");
+                table[i] = items;
+            }
+            table(table);
+        } catch (Exception e) {
+            table(new String[][] { { "No Task Exist" } });
+        }
+
     }
 
     public static void main(String[] args) throws IOException {
-        Path fp =  Path.of("tasks.txt");
+        Path fp = Path.of("tasks.txt");
 
         Scanner scan = new Scanner(System.in);
         welcome();
@@ -146,12 +177,11 @@ return 0;
                 System.out.print("What is Your New Task :");
                 String taskinp = scan.nextLine();
                 System.out.println(taskinp);
-                int taskid = createtask(fp,taskinp);
-                System.out.printf("Task Created with id %d \n" , taskid);
-            }else if (uIn.equals("S") || uIn.equals("s") || uIn.equals("Show") || uIn.equals("show")) {
+                createtask(fp, taskinp);
+            } else if (uIn.equals("S") || uIn.equals("s") || uIn.equals("Show") || uIn.equals("show")) {
                 showtasks(fp);
-            }else{
-                 System.out.println("Choose a Valid Option.");
+            } else {
+                System.out.println("Choose a Valid Option.");
             }
         }
         scan.close();
